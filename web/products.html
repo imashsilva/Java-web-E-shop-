@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Products - Smart Tech</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="CSS/productscss.css"/>
+
+    </head>
+    <body>
+        <!-- Navigation -->
+        <div id="navbar-container"></div>
+
+        <!-- Page Header -->
+        <div class="bg-dark text-white py-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="h2 mb-0">Our Products</h1>
+                        <p class="mb-0 text-light">Discover the latest technology</p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-md-end mb-0">
+                                <li class="breadcrumb-item"><a href="index.html" class="text-light">Home</a></li>
+                                <li class="breadcrumb-item active text-light">Products</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container py-5">
+            <div class="row">
+                <!-- Sidebar Filters -->
+                <div class="col-lg-3">
+                    <div class="filter-section">
+                        <h5 class="mb-3">Categories</h5>
+                        <div id="categoriesList">
+                            <!-- Categories will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h5 class="mb-3">Price Range</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="priceRange" id="priceAll" checked>
+                            <label class="form-check-label" for="priceAll">All Prices</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="priceRange" id="priceUnder100">
+                            <label class="form-check-label" for="priceUnder100">Under $100</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="priceRange" id="price100to500">
+                            <label class="form-check-label" for="price100to500">$100 - $500</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="priceRange" id="priceOver500">
+                            <label class="form-check-label" for="priceOver500">Over $500</label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h5 class="mb-3">Availability</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="inStock" checked>
+                            <label class="form-check-label" for="inStock">In Stock</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="outOfStock">
+                            <label class="form-check-label" for="outOfStock">Out of Stock</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="col-lg-9">
+                    <!-- Search and Sort Bar -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="Search products..." id="searchInput">
+                                <button class="btn btn-primary" type="button" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">Sort by:</span>
+                            <select class="form-select form-select-sm" style="width: auto;" id="sortSelect">
+                                <option value="newest">Newest</option>
+                                <option value="price_low">Price: Low to High</option>
+                                <option value="price_high">Price: High to Low</option>
+                                <option value="name">Name A-Z</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div id="productsGrid" class="row g-4">
+                        <!-- Products will be loaded here -->
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" class="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading products...</p>
+                    </div>
+
+                    <!-- No Products Message -->
+                    <div id="noProducts" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h4>No products found</h4>
+                        <p class="text-muted">Try adjusting your search or filters</p>
+                        <button class="btn btn-primary" onclick="clearFilters()">Clear Filters</button>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Product pagination" class="mt-5">
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!-- Pagination will be generated here -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div id="footer-container"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="JS/product.js"></script>
+        <script src="JS/session.js"></script>
+
+        <script>
+                            let currentPage = 1;
+                            const productsPerPage = 8;
+                            let allProducts = [];
+
+                            // Load categories and products when page loads
+                            document.addEventListener('DOMContentLoaded', function () {
+                                loadCategories();
+                                loadProducts();
+                                setupEventListeners();
+                            });
+
+                            function loadCategories() {
+                                fetch('categories?format=json')
+                                        .then(response => response.json())
+                                        .then(categories => {
+                                            const categoriesList = document.getElementById('categoriesList');
+                                            categoriesList.innerHTML = `
+                    <div class="category-item active" data-category="all">
+                        <i class="fas fa-th-large me-2"></i>All Categories
+                    </div>
+                `;
+
+                                            categories.forEach(category => {
+                                                categoriesList.innerHTML += `
+                        <div class="category-item" data-category="${category.id}">
+                            <i class="fas fa-mobile-alt me-2"></i>${category.name}
+                        </div>
+                    `;
+                                            });
+                                        })
+                                        .catch(error => {
+                                            console.error('Error loading categories:', error);
+                                        });
+                            }
+
+                            function loadProducts(category = 'all', search = '', sort = 'newest') {
+                                showLoading(true);
+
+                                let url = `products?format=json&sort=${sort}`;
+                                if (category !== 'all') {
+                                    url += `&category=${category}`;
+                                }
+                                if (search) {
+                                    url += `&search=${encodeURIComponent(search)}`;
+                                }
+
+                                fetch(url)
+                                        .then(response => response.json())
+                                        .then(products => {
+                                            allProducts = products;
+                                            displayProducts(products);
+                                            updatePagination(products.length);
+                                            showLoading(false);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error loading products:', error);
+                                            showLoading(false);
+                                        });
+                            }
+
+                            function displayProducts(products) {
+                                const productsGrid = document.getElementById('productsGrid');
+                                const noProducts = document.getElementById('noProducts');
+
+                                if (products.length === 0) {
+                                    productsGrid.innerHTML = '';
+                                    noProducts.style.display = 'block';
+                                    return;
+                                }
+
+                                noProducts.style.display = 'none';
+
+                                // Calculate products to show for current page
+                                const startIndex = (currentPage - 1) * productsPerPage;
+                                const endIndex = startIndex + productsPerPage;
+                                const productsToShow = products.slice(startIndex, endIndex);
+
+                                let html = '';
+                                productsToShow.forEach(product => {
+                                    html += `
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-card">
+                        <div class="position-relative">
+                            <img src="${product.imageUrl || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&w=500'}" 
+                                 class="card-img-top product-image" alt="${product.name}">
+                            ${product.Quantity === 0 ? '<div class="product-badge"><span class="badge bg-secondary">Out of Stock</span></div>' : ''}
+                            <div class="product-actions">
+                                <button class="action-btn btn-warning text-white" title="Add to Wishlist" onclick="addToWishlist(${product.id})">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="action-btn btn-info text-white" title="Quick View" onclick="quickView(${product.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text text-muted small">${product.description ? product.description.substring(0, 60) + '...' : 'No description available'}</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="h5 text-primary mb-0">$${product.price}</span>
+                                <small class="text-muted">In stock: ${product.Quantity}</small>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="product-detail.html?id=${product.id}" class="btn btn-outline-primary btn-sm">View Details</a>
+                                <button class="btn btn-primary btn-sm" ${product.Quantity === 0 ? 'disabled' : ''} onclick="addToCart(${product.id})">
+                                    <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                                });
+
+                                productsGrid.innerHTML = html;
+                            }
+
+                            function setupEventListeners() {
+                                // Category filter
+                                document.addEventListener('click', function (e) {
+                                    if (e.target.closest('.category-item')) {
+                                        const categoryItem = e.target.closest('.category-item');
+                                        const category = categoryItem.dataset.category;
+
+                                        // Update active state
+                                        document.querySelectorAll('.category-item').forEach(item => {
+                                            item.classList.remove('active');
+                                        });
+                                        categoryItem.classList.add('active');
+
+                                        currentPage = 1;
+                                        loadProducts(category, document.getElementById('searchInput').value, document.getElementById('sortSelect').value);
+                                    }
+                                });
+
+                                // Search
+                                document.getElementById('searchBtn').addEventListener('click', function () {
+                                    currentPage = 1;
+                                    loadProducts(getSelectedCategory(), document.getElementById('searchInput').value, document.getElementById('sortSelect').value);
+                                });
+
+                                document.getElementById('searchInput').addEventListener('keypress', function (e) {
+                                    if (e.key === 'Enter') {
+                                        currentPage = 1;
+                                        loadProducts(getSelectedCategory(), this.value, document.getElementById('sortSelect').value);
+                                    }
+                                });
+
+                                // Sort
+                                document.getElementById('sortSelect').addEventListener('change', function () {
+                                    currentPage = 1;
+                                    loadProducts(getSelectedCategory(), document.getElementById('searchInput').value, this.value);
+                                });
+                            }
+
+                            function getSelectedCategory() {
+                                const activeCategory = document.querySelector('.category-item.active');
+                                return activeCategory ? activeCategory.dataset.category : 'all';
+                            }
+
+                            function updatePagination(totalProducts) {
+                                const totalPages = Math.ceil(totalProducts / productsPerPage);
+                                const pagination = document.getElementById('pagination');
+
+                                if (totalPages <= 1) {
+                                    pagination.innerHTML = '';
+                                    return;
+                                }
+
+                                let html = '';
+
+                                // Previous button
+                                html += `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a>
+            </li>
+        `;
+
+                                // Page numbers
+                                for (let i = 1; i <= totalPages; i++) {
+                                    html += `
+                <li class="page-item ${currentPage === i ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                </li>
+            `;
+                                }
+
+                                // Next button
+                                html += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a>
+            </li>
+        `;
+
+                                pagination.innerHTML = html;
+                            }
+
+                            function changePage(page) {
+                                currentPage = page;
+                                displayProducts(allProducts);
+                                window.scrollTo({top: 0, behavior: 'smooth'});
+                            }
+
+                            function showLoading(show) {
+                                document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
+                            }
+
+                            function clearFilters() {
+                                document.getElementById('searchInput').value = '';
+                                document.querySelectorAll('.category-item').forEach(item => {
+                                    item.classList.remove('active');
+                                });
+                                document.querySelector('.category-item[data-category="all"]').classList.add('active');
+                                document.getElementById('sortSelect').value = 'newest';
+                                currentPage = 1;
+                                loadProducts();
+                            }
+
+                            // Updated addToCart function for products page
+                            async function addToCart(productId) {
+                                // Check if user is logged in
+                                if (!window.sessionManager || !window.sessionManager.isLoggedIn()) {
+                                    const redirectUrl = encodeURIComponent(window.location.href);
+                                    if (confirm('You need to login to add items to cart. Would you like to login now?')) {
+                                        window.location.href = `login.html?redirect=${redirectUrl}`;
+                                    }
+                                    return;
+                                }
+
+                                try {
+                                    // Find the product in allProducts array
+                                    const product = allProducts.find(p => p.id === productId);
+
+                                    // Check if product is in stock
+                                    if (product.Quantity === 0) {
+                                        if (window.ToastManager) {
+                                            window.ToastManager.show('This product is out of stock!', 'error');
+                                        } else {
+                                            alert('This product is out of stock!');
+                                        }
+                                        return;
+                                    }
+
+                                    // Call sessionManager to add to cart
+                                    const result = await window.sessionManager.addToCart(productId, 1);
+
+                                    // Show success message
+                                    if (window.ToastManager) {
+                                        window.ToastManager.show('Product added to cart!', 'success');
+                                    } else {
+                                        alert('Product added to cart!');
+                                    }
+
+                                    // Update cart count in navigation
+                                    if (window.sessionManager.updateCartCount) {
+                                        window.sessionManager.updateCartCount();
+                                    }
+
+                                } catch (error) {
+                                    console.error('Failed to add to cart:', error);
+                                    if (window.ToastManager) {
+                                        window.ToastManager.show(error.message || 'Failed to add product to cart', 'error');
+                                    } else {
+                                        alert(error.message || 'Failed to add product to cart');
+                                    }
+                                }
+                            }
+
+                            function addToWishlist(productId) {
+                                console.log('Add to wishlist:', productId);
+                                // Implement wishlist functionality
+                            }
+
+                            function quickView(productId) {
+                                console.log('Quick view:', productId);
+                                // Implement quick view functionality
+                            }
+        </script>
+    </body>
+</html>

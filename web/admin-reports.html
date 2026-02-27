@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reports - Smart Tech Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link rel="stylesheet" href="CSS/productscss.css">
+        <link rel="stylesheet" href="CSS/admin-dashcss.css"> 
+        <style>
+            .admin-container {
+                margin-left: 250px;
+                padding: 20px;
+                background-color: #f8f9fa;
+                min-height: 100vh;
+            }
+            .page-header {
+                background: white;
+                border-radius: 15px;
+                padding: 1.5rem 2rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin-bottom: 2rem;
+            }
+            .report-card {
+                background: white;
+                border-radius: 15px;
+                padding: 1.5rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin-bottom: 2rem;
+                height: 100%;
+            }
+            .chart-container {
+                position: relative;
+                height: 300px;
+                margin-top: 1rem;
+            }
+            .stat-card {
+                background: #5c0af5;
+                background: linear-gradient(90deg, rgba(92, 10, 245, 1) 0%, rgba(8, 72, 156, 1) 79%, rgba(68, 0, 135, 1) 100%);
+                color: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+            .stat-number {
+                font-size: 2rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
+            .stat-label {
+                font-weight: bold;
+                font-size: 0.9rem;
+                opacity: 0.9;
+                color: whitesmoke;
+            }
+            .export-btn {
+                background: linear-gradient(135deg, #28a745, #20c997);
+                border: none;
+                border-radius: 8px;
+                padding: 0.5rem 1rem;
+                color: white;
+                transition: all 0.3s ease;
+            }
+            .export-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            }
+            .date-filter {
+                max-width: 200px;
+            }
+            .report-table {
+                font-size: 0.9rem;
+            }
+            .report-table th {
+                background: #f8f9fa;
+                font-weight: 600;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <h4 class="mb-0">
+                    <i class="fas fa-crown me-2"></i>
+                    Smart Tech Admin
+                </h4>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                </a>
+                <a href="admin-products.html" class="nav-link">
+                    <i class="fas fa-box"></i>Products
+                </a>
+                <a href="admin-categories.html" class="nav-link">
+                    <i class="fas fa-tags"></i>Categories
+                </a>
+                <a href="admin-orders.html" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>Orders
+                </a>
+                <a href="admin-users.html" class="nav-link">
+                    <i class="fas fa-users"></i>Users
+                </a>
+                <a href="admin-reports.html" class="nav-link active">
+                    <i class="fas fa-chart-bar"></i>Reports
+                </a>
+                <div class="mt-4 pt-3 border-top">
+                    <a href="javascript:void(0)" class="nav-link btn btn-danger" id="adminLogout">
+                        <i class="fas fa-sign-out-alt"></i>Logout
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1">Analytics & Reports</h3>
+                        <p class="text-muted mb-0">Comprehensive business insights and analytics</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <input type="month" class="form-control date-filter" id="reportMonth" value="">
+                        <button class="btn btn-primary" onclick="loadAllReports()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </button>
+                        <button class="btn export-btn" onclick="exportAllReports()">
+                            <i class="fas fa-download me-2"></i>Export All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalRevenue">$0</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalOrders">0</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalProducts">0</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report 1: Sales Report -->
+            <div class="report-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4><i class="fas fa-chart-line text-primary me-2"></i>Sales Report</h4>
+                    <button class="btn btn-outline-primary btn-sm" onclick="exportSalesReport()">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Sales Summary</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm report-table">
+                                <tbody>
+                                    <tr>
+                                        <td>Total Sales:</td>
+                                        <td class="text-end fw-bold" id="totalSales">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Orders Completed:</td>
+                                        <td class="text-end" id="completedOrders">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Average Order Value:</td>
+                                        <td class="text-end" id="avgOrderValue">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Best Selling Category:</td>
+                                        <td class="text-end" id="bestCategory">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report 2: Inventory Report -->
+            <div class="report-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4><i class="fas fa-boxes text-warning me-2"></i>Inventory Report</h4>
+                    <button class="btn btn-outline-warning btn-sm" onclick="exportInventoryReport()">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <canvas id="inventoryChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Stock Status</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm report-table">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th class="text-end">Count</th>
+                                        <th class="text-end">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="badge bg-success">In Stock</span></td>
+                                        <td class="text-end" id="inStockCount">0</td>
+                                        <td class="text-end" id="inStockValue">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge bg-warning">Low Stock</span></td>
+                                        <td class="text-end" id="lowStockCount">0</td>
+                                        <td class="text-end" id="lowStockValue">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge bg-danger">Out of Stock</span></td>
+                                        <td class="text-end" id="outOfStockCount">0</td>
+                                        <td class="text-end" id="outOfStockValue">$0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h6 class="mt-4">Top Selling Products</h6>
+                        <div id="topProductsList">
+                            <!-- Top products will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report 3: Customer Report -->
+            <div class="report-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4><i class="fas fa-users text-success me-2"></i>Customer Report</h4>
+                    <button class="btn btn-outline-success btn-sm" onclick="exportCustomerReport()">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <canvas id="customerChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Customer Insights</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm report-table">
+                                <tbody>
+                                    <tr>
+                                        <td>New Customers (This Month):</td>
+                                        <td class="text-end fw-bold" id="newCustomers">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Customers:</td>
+                                        <td class="text-end" id="totalCustomers">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Repeat Customer Rate:</td>
+                                        <td class="text-end" id="repeatRate">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Average Customer Value:</td>
+                                        <td class="text-end" id="avgCustomerValue">$0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h6 class="mt-4">Top Customers</h6>
+                        <div id="topCustomersList">
+                            <!-- Top customers will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Receipts Section -->
+            <div class="report-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4><i class="fas fa-receipt text-info me-2"></i>Payment Receipts</h4>
+                    <button class="btn btn-outline-info btn-sm" onclick="generatePaymentReceipts()">
+                        <i class="fas fa-print me-1"></i>Generate Receipts
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Receipt ID</th>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receiptsTable">
+                            <!-- Receipts will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+                        let salesChart, inventoryChart, customerChart;
+
+                        $(document).ready(function () {
+                            checkAdminAuth();
+                            setDefaultMonth();
+                            loadAllReports();
+                        });
+
+                        function checkAdminAuth() {
+                            $.get('admin-auth?action=check', function (response) {
+                                if (!response.isAdmin) {
+                                    window.location.href = 'admin-login.html';
+                                }
+                            }).fail(function () {
+                                window.location.href = 'admin-login.html';
+                            });
+                        }
+
+                        function setDefaultMonth() {
+                            const now = new Date();
+                            const year = now.getFullYear();
+                            const month = String(now.getMonth() + 1).padStart(2, '0');
+                            $('#reportMonth').val(`${year}-${month}`);
+                        }
+
+                        function loadAllReports() {
+                            const month = $('#reportMonth').val();
+                            loadQuickStats();
+                            loadSalesReport(month);
+                            loadInventoryReport();
+                            loadCustomerReport(month);
+                            loadPaymentReceipts();
+                        }
+
+                        function loadQuickStats() {
+                            $.get('admin-reports?action=quick-stats', function (stats) {
+                                $('#totalRevenue').text('$' + (stats.totalRevenue || '0'));
+                                $('#totalOrders').text(stats.totalOrders || '0');
+                                $('#totalProducts').text(stats.totalProducts || '0');
+                                $('#totalUsers').text(stats.totalUsers || '0');
+                            });
+                        }
+
+                        function loadSalesReport(month) {
+                            $.get(`admin-reports?action=sales-report&month=${month}`, function (report) {
+                                // Update sales summary
+                                $('#totalSales').text('$' + (report.totalSales || '0'));
+                                $('#completedOrders').text(report.completedOrders || '0');
+                                $('#avgOrderValue').text('$' + (report.avgOrderValue || '0'));
+                                $('#bestCategory').text(report.bestCategory || '-');
+
+                                // Create sales chart
+                                const ctx = document.getElementById('salesChart').getContext('2d');
+                                if (salesChart)
+                                    salesChart.destroy();
+
+                                salesChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: report.dailySales ? Object.keys(report.dailySales) : [],
+                                        datasets: [{
+                                                label: 'Daily Revenue',
+                                                data: report.dailySales ? Object.values(report.dailySales) : [],
+                                                borderColor: '#667eea',
+                                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                                borderWidth: 2,
+                                                fill: true,
+                                                tension: 0.4
+                                            }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: false
+                                            }
+                                        },
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                ticks: {
+                                                    callback: function (value) {
+                                                        return '$' + value;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                        }
+
+                        function loadInventoryReport() {
+                            $.get('admin-reports?action=inventory-report', function (report) {
+                                // Update inventory stats
+                                $('#inStockCount').text(report.inStockCount || '0');
+                                $('#inStockValue').text('$' + (report.inStockValue || '0'));
+                                $('#lowStockCount').text(report.lowStockCount || '0');
+                                $('#lowStockValue').text('$' + (report.lowStockValue || '0'));
+                                $('#outOfStockCount').text(report.outOfStockCount || '0');
+                                $('#outOfStockValue').text('$' + (report.outOfStockValue || '0'));
+
+                                // Create inventory chart
+                                const ctx = document.getElementById('inventoryChart').getContext('2d');
+                                if (inventoryChart)
+                                    inventoryChart.destroy();
+
+                                inventoryChart = new Chart(ctx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: ['In Stock', 'Low Stock', 'Out of Stock'],
+                                        datasets: [{
+                                                data: [
+                                                    report.inStockCount || 0,
+                                                    report.lowStockCount || 0,
+                                                    report.outOfStockCount || 0
+                                                ],
+                                                backgroundColor: [
+                                                    '#28a745',
+                                                    '#ffc107',
+                                                    '#dc3545'
+                                                ],
+                                                borderWidth: 2
+                                            }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                position: 'bottom'
+                                            }
+                                        }
+                                    }
+                                });
+
+                                // Load top products
+                                let topProductsHtml = '';
+                                if (report.topProducts && report.topProducts.length > 0) {
+                                    report.topProducts.forEach(product => {
+                                        topProductsHtml += `
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <strong>${product.name}</strong>
+                                        <div class="text-muted small">Sold: ${product.sold}</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold">$${product.revenue}</div>
+                                        <span class="badge bg-${product.stock <= 5 ? 'warning' : 'success'}">Stock: ${product.stock}</span>
+                                    </div>
+                                </div>
+                            `;
+                                    });
+                                } else {
+                                    topProductsHtml = '<p class="text-muted">No sales data available</p>';
+                                }
+                                $('#topProductsList').html(topProductsHtml);
+                            });
+                        }
+
+                        function loadCustomerReport(month) {
+                            $.get(`admin-reports?action=customer-report&month=${month}`, function (report) {
+                                // Update customer insights
+                                $('#newCustomers').text(report.newCustomers || '0');
+                                $('#totalCustomers').text(report.totalCustomers || '0');
+                                $('#repeatRate').text((report.repeatRate || '0') + '%');
+                                $('#avgCustomerValue').text('$' + (report.avgCustomerValue || '0'));
+
+                                // Create customer chart
+                                const ctx = document.getElementById('customerChart').getContext('2d');
+                                if (customerChart)
+                                    customerChart.destroy();
+
+                                customerChart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: report.customerGrowth ? Object.keys(report.customerGrowth) : [],
+                                        datasets: [{
+                                                label: 'New Customers',
+                                                data: report.customerGrowth ? Object.values(report.customerGrowth) : [],
+                                                backgroundColor: '#20c997',
+                                                borderWidth: 0
+                                            }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: false
+                                            }
+                                        }
+                                    }
+                                });
+
+                                // Load top customers
+                                let topCustomersHtml = '';
+                                if (report.topCustomers && report.topCustomers.length > 0) {
+                                    report.topCustomers.forEach(customer => {
+                                        topCustomersHtml += `
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <strong>${customer.name}</strong>
+                                        <div class="text-muted small">${customer.email}</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold">$${customer.totalSpent}</div>
+                                        <div class="text-muted small">${customer.orderCount} orders</div>
+                                    </div>
+                                </div>
+                            `;
+                                    });
+                                } else {
+                                    topCustomersHtml = '<p class="text-muted">No customer data available</p>';
+                                }
+                                $('#topCustomersList').html(topCustomersHtml);
+                            });
+                        }
+
+                        function loadPaymentReceipts() {
+                            $.get('admin-reports?action=payment-receipts', function (receipts) {
+                                let receiptsHtml = '';
+                                if (receipts && receipts.length > 0) {
+                                    receipts.forEach(receipt => {
+                                        receiptsHtml += `
+                                <tr>
+                                    <td>RC-${receipt.id}</td>
+                                    <td>#${receipt.orderId}</td>
+                                    <td>${receipt.customerName}</td>
+                                    <td>$${receipt.amount}</td>
+                                    <td>${new Date(receipt.date).toLocaleDateString()}</td>
+                                    <td><span class="badge bg-success">${receipt.status}</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="printReceipt(${receipt.id})">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" onclick="downloadReceipt(${receipt.id})">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                                    });
+                                } else {
+                                    receiptsHtml = '<tr><td colspan="7" class="text-center text-muted">No payment receipts found</td></tr>';
+                                }
+                                $('#receiptsTable').html(receiptsHtml);
+                            });
+                        }
+
+                        function exportAllReports() {
+                            alert('Exporting all reports... This would generate PDF/Excel files in a real application.');
+                        }
+
+                        function exportSalesReport() {
+                            alert('Exporting sales report...');
+                        }
+
+                        function exportInventoryReport() {
+                            alert('Exporting inventory report...');
+                        }
+
+                        function exportCustomerReport() {
+                            alert('Exporting customer report...');
+                        }
+
+                        function generatePaymentReceipts() {
+                            alert('Generating payment receipts for all completed orders...');
+                        }
+
+                        function printReceipt(receiptId) {
+                            alert(`Printing receipt ${receiptId}...`);
+                        }
+
+                        function downloadReceipt(receiptId) {
+                            alert(`Downloading receipt ${receiptId}...`);
+                        }
+
+                        // Logout
+                        $('#adminLogout').click(function () {
+                            $.post('logout', function () {
+                                window.location.href = 'admin-login.html';
+                            });
+                        });
+
+                        function exportAllReports() {
+                            const month = $('#reportMonth').val();
+                            window.open(`admin-reports?action=export-sales&month=${month}`, '_blank');
+                            setTimeout(() => {
+                                window.open(`admin-reports?action=export-inventory`, '_blank');
+                            }, 500);
+                            setTimeout(() => {
+                                window.open(`admin-reports?action=export-customers&month=${month}`, '_blank');
+                            }, 1000);
+                        }
+
+                        function exportSalesReport() {
+                            const month = $('#reportMonth').val();
+                            window.open(`admin-reports?action=export-sales&month=${month}`, '_blank');
+                        }
+
+                        function exportInventoryReport() {
+                            window.open(`admin-reports?action=export-inventory`, '_blank');
+                        }
+
+                        function exportCustomerReport() {
+                            const month = $('#reportMonth').val();
+                            window.open(`admin-reports?action=export-customers&month=${month}`, '_blank');
+                        }
+
+                        function generatePaymentReceipts() {
+                            // This would generate receipts for all completed orders
+                            alert('Generating payment receipts for all completed orders...');
+                            loadPaymentReceipts(); // Refresh the receipts list
+                        }
+
+                        function printReceipt(receiptId) {
+                            window.open(`admin-reports?action=print-receipt&id=${receiptId}`, '_blank');
+                        }
+
+                        function downloadReceipt(receiptId) {
+                            // For PDF download, you would need additional server-side PDF generation
+                            // For now, we'll open the print version which users can save as PDF
+                            window.open(`admin-reports?action=print-receipt&id=${receiptId}`, '_blank');
+                        }
+        </script>
+    </body>
+</html>

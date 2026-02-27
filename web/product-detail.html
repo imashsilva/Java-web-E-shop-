@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Smart Tech</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/product-details.css"/>
+    <style>
+        .toast-container {
+            z-index: 9999;
+        }
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 5px;
+        }
+        .thumbnail.active {
+            border-color: #007bff;
+        }
+        .quantity-input {
+            max-width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div id="navbar-container"></div>
+
+    <!-- Page Header -->
+    <div class="bg-light py-3">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="products.html">Products</a></li>
+                    <li class="breadcrumb-item active" id="productCategory">Product</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading product details...</p>
+        </div>
+
+        <!-- Product Details -->
+        <div id="productDetails" style="display: none;">
+            <div class="row">
+                <!-- Product Images -->
+                <div class="col-lg-6">
+                    <div class="product-gallery mb-4">
+                        <img id="mainImage" src="" class="img-fluid w-100 rounded-3 shadow" alt="Product Image">
+                    </div>
+                    <div class="thumbnail-gallery d-flex gap-2">
+                        <!-- Thumbnails will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-6">
+                    <div class="product-info">
+                        <h1 id="productName" class="h2 mb-3"></h1>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rating me-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                                <span class="ms-2 text-muted">(128 reviews)</span>
+                            </div>
+                            <span id="stockStatus" class="badge"></span>
+                        </div>
+
+                        <h2 id="productPrice" class="text-primary mb-4"></h2>
+
+                        <p id="productDescription" class="lead mb-4"></p>
+
+                        <div class="mb-4">
+                            <h5>Key Features:</h5>
+                            <ul class="feature-list" id="keyFeatures">
+                                <!-- Features will be loaded here -->
+                            </ul>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="quantity" class="form-label">Quantity:</label>
+                                <div class="input-group" style="width: 140px;">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                                    <input type="number" class="form-control text-center quantity-input" id="quantity" value="1" min="1" max="1">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center h-100">
+                                    <span class="text-muted" id="stockQuantity"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex mb-4">
+                            <button class="btn btn-primary btn-lg flex-fill" id="addToCartBtn" onclick="addToCart()">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                            <button class="btn btn-outline-primary btn-lg flex-fill" onclick="addToWishlist()">
+                                <i class="fas fa-heart me-2"></i>Add to Wishlist
+                            </button>
+                        </div>
+
+                        <div class="product-meta">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <i class="fas fa-shipping-fast text-primary mb-2"></i>
+                                    <div class="small">Free Shipping</div>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-undo-alt text-primary mb-2"></i>
+                                    <div class="small">30-Day Returns</div>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-shield-alt text-primary mb-2"></i>
+                                    <div class="small">1-Year Warranty</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Tabs -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button">Description</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button">Specifications</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">Reviews</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content p-4 border border-top-0 rounded-bottom" id="productTabsContent">
+                        <div class="tab-pane fade show active" id="description" role="tabpanel">
+                            <div id="fullDescription"></div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="specs" role="tabpanel">
+                            <div class="row" id="specifications">
+                                <!-- Specifications will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="reviews" role="tabpanel">
+                            <div class="text-center py-4">
+                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                                <h4>Customer Reviews</h4>
+                                <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+                                <button class="btn btn-primary">Write a Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3 class="mb-4">Related Products</h3>
+                    <div class="row g-4" id="relatedProducts">
+                        <!-- Related products will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="text-center py-5" style="display: none;">
+            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+            <h4>Product Not Found</h4>
+            <p class="text-muted">The product you're looking for doesn't exist.</p>
+            <a href="products.html" class="btn btn-primary">Browse Products</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="JS/session.js"></script>
+    
+    <script>
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        let currentProduct = null;
+
+        console.log('Product ID from URL:', productId);
+
+        // Load product details when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, starting to fetch product details...');
+            
+            // Debug: Check if sessionManager is available
+            console.log('sessionManager available:', !!window.sessionManager);
+            if (window.sessionManager) {
+                console.log('sessionManager methods:', Object.keys(window.sessionManager));
+                console.log('sessionManager.addToCart type:', typeof window.sessionManager.addToCart);
+            }
+            
+            if (productId) {
+                loadProductDetails(productId);
+            } else {
+                console.error('No product ID found in URL');
+                showError();
+            }
+        });
+
+        function loadProductDetails(productId) {
+            console.log('Fetching product details for ID:', productId);
+            
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('productDetails').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+
+            fetch(`product-details?format=json&id=${productId}`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(product => {
+                    console.log('Product data received:', product);
+                    currentProduct = product;
+                    displayProductDetails(product);
+                    loadRelatedProducts();
+                })
+                .catch(error => {
+                    console.error('Error loading product:', error);
+                    showError();
+                });
+        }
+
+        function displayProductDetails(product) {
+            console.log('Displaying product:', product);
+            
+            // Hide loading, show product details
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('productDetails').style.display = 'block';
+
+            // Update page title
+            document.title = `${product.name} - Smart Tech`;
+
+            // Update breadcrumb
+            if (product.categoryName) {
+                document.getElementById('productCategory').textContent = product.categoryName;
+            }
+
+            // Update product information
+            document.getElementById('productName').textContent = product.name;
+            
+            // Convert price if it's an object (BigDecimal)
+            const price = typeof product.price === 'object' ? 
+                         product.price : 
+                         parseFloat(product.price);
+            
+            document.getElementById('productPrice').textContent = `$${parseFloat(price).toFixed(2)}`;
+            document.getElementById('productDescription').textContent = product.description || 'No description available.';
+            document.getElementById('fullDescription').innerHTML = `<p>${product.description || 'No detailed description available.'}</p>`;
+
+            // Update stock information
+            const stockStatus = document.getElementById('stockStatus');
+            const stockQuantity = document.getElementById('stockQuantity');
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const quantityInput = document.getElementById('quantity');
+
+            if (product.Quantity > 0) {
+                stockStatus.className = 'badge bg-success';
+                stockStatus.textContent = 'In Stock';
+                stockQuantity.textContent = `${product.Quantity} units available`;
+                addToCartBtn.disabled = false;
+                addToCartBtn.innerHTML = '<i class="fas fa-cart-plus me-2"></i>Add to Cart';
+                quantityInput.max = product.Quantity;
+            } else {
+                stockStatus.className = 'badge bg-danger';
+                stockStatus.textContent = 'Out of Stock';
+                stockQuantity.textContent = 'Currently unavailable';
+                addToCartBtn.disabled = true;
+                addToCartBtn.innerHTML = '<i class="fas fa-times me-2"></i>Out of Stock';
+                quantityInput.disabled = true;
+            }
+
+            // Update images
+            const mainImage = document.getElementById('mainImage');
+            const thumbnailGallery = document.querySelector('.thumbnail-gallery');
+
+            if (product.imageUrl) {
+                mainImage.src = product.imageUrl;
+                mainImage.alt = product.name;
+                thumbnailGallery.innerHTML = `
+                    <img src="${product.imageUrl}" class="thumbnail active" onclick="changeMainImage(this)" alt="${product.name}">
+                `;
+            } else {
+                // Use default image
+                mainImage.src = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&w=500';
+                mainImage.alt = 'Default Product Image';
+                thumbnailGallery.innerHTML = `
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&w=500" class="thumbnail active" onclick="changeMainImage(this)" alt="Default Product Image">
+                `;
+            }
+
+            // Generate features from description (simplified)
+            const features = [
+                'High-quality materials',
+                'Advanced technology', 
+                'User-friendly design',
+                'Excellent performance',
+                'Reliable and durable'
+            ];
+
+            const featuresList = document.getElementById('keyFeatures');
+            featuresList.innerHTML = features.map(feature => 
+                `<li><i class="fas fa-check text-success me-2"></i>${feature}</li>`
+            ).join('');
+
+            // Generate specifications
+            const specifications = document.getElementById('specifications');
+            const specs = [
+                { name: 'Brand', value: 'Smart Tech' },
+                { name: 'Model', value: product.name },
+                { name: 'Category', value: product.categoryName || 'General' },
+                { name: 'Price', value: `$${parseFloat(price).toFixed(2)}` },
+                { name: 'Stock', value: product.Quantity },
+                { name: 'Product ID', value: product.id },
+                { name: 'Added', value: new Date(product.createdAt).toLocaleDateString() }
+            ];
+
+            specifications.innerHTML = specs.map(spec => `
+                <div class="col-md-6 mb-3">
+                    <strong>${spec.name}:</strong> ${spec.value}
+                </div>
+            `).join('');
+
+            console.log('Product details displayed successfully');
+        }
+
+        function showError() {
+            console.log('Showing error message');
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('productDetails').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+
+        function changeMainImage(thumbnail) {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = thumbnail.src;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            thumbnail.classList.add('active');
+        }
+
+        function increaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentQuantity = parseInt(quantityInput.value);
+            const maxQuantity = parseInt(quantityInput.max);
+            
+            if (currentQuantity < maxQuantity) {
+                quantityInput.value = currentQuantity + 1;
+            }
+        }
+
+        function decreaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentQuantity = parseInt(quantityInput.value);
+            if (currentQuantity > 1) {
+                quantityInput.value = currentQuantity - 1;
+            }
+        }
+
+        // CORRECTED Add to Cart function
+        async function addToCart() {
+            console.log('🛒 addToCart function called');
+            
+            // Check if sessionManager is available
+            if (!window.sessionManager) {
+                console.error('❌ sessionManager is not available');
+                alert('Please wait for the page to load completely, then try again.');
+                return;
+            }
+
+            // Check if addToCart method exists
+            if (typeof window.sessionManager.addToCart !== 'function') {
+                console.error('❌ sessionManager.addToCart is not a function');
+                console.log('Available methods:', Object.keys(window.sessionManager));
+                alert('Cart functionality not loaded. Please refresh the page.');
+                return;
+            }
+
+            if (!window.sessionManager.isLoggedIn()) {
+                const redirectUrl = encodeURIComponent(window.location.href);
+                if (confirm('You need to login to add items to cart. Would you like to login now?')) {
+                    window.location.href = `login.html?redirect=${redirectUrl}`;
+                }
+                return;
+            }
+
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const productName = document.getElementById('productName').textContent;
+            const addToCartBtn = document.getElementById('addToCartBtn');
+
+            try {
+                console.log('📦 Calling sessionManager.addToCart with:', { productId, quantity });
+                
+                // CORRECTED: Use window.sessionManager.addToCart (not SessionManager.addToCart)
+                const result = await window.sessionManager.addToCart(productId, quantity);
+                
+                // Show success message
+                if (window.ToastManager) {
+                    window.ToastManager.show(`${quantity} ${productName} added to cart!`, 'success');
+                } else {
+                    alert(`${quantity} ${productName} added to cart!`);
+                }
+                
+                // Update cart count in navigation
+                window.sessionManager.updateCartCount();
+                
+                // Visual feedback on the button
+                const originalHTML = addToCartBtn.innerHTML;
+                addToCartBtn.innerHTML = '<i class="fas fa-check me-2"></i> Added!';
+                addToCartBtn.classList.remove('btn-primary');
+                addToCartBtn.classList.add('btn-success');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    addToCartBtn.innerHTML = originalHTML;
+                    addToCartBtn.classList.remove('btn-success');
+                    addToCartBtn.classList.add('btn-primary');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Failed to add to cart:', error);
+                if (window.ToastManager) {
+                    window.ToastManager.show(error.message || 'Failed to add product to cart', 'error');
+                } else {
+                    alert(error.message || 'Failed to add product to cart');
+                }
+            }
+        }
+
+        function addToWishlist() {
+            console.log(`Adding product ${productId} to wishlist`);
+            if (window.ToastManager) {
+                window.ToastManager.show('Added to wishlist!', 'info');
+            }
+            // Implement wishlist functionality
+        }
+
+        // Load related products
+        function loadRelatedProducts() {
+            console.log('Loading related products...');
+            // Simulate loading related products
+            setTimeout(() => {
+                const relatedProducts = document.getElementById('relatedProducts');
+                relatedProducts.innerHTML = `
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card related-product-card">
+                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&w=500" class="card-img-top" alt="Samsung Galaxy S24">
+                            <div class="card-body">
+                                <h6 class="card-title">Samsung Galaxy S24</h6>
+                                <p class="card-text text-primary">$849.99</p>
+                                <a href="product-detail.html?id=2" class="btn btn-outline-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card related-product-card">
+                            <img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?ixlib=rb-4.0.3&w=500" class="card-img-top" alt="Google Pixel 8 Pro">
+                            <div class="card-body">
+                                <h6 class="card-title">Google Pixel 8 Pro</h6>
+                                <p class="card-text text-primary">$799.99</p>
+                                <a href="product-detail.html?id=3" class="btn btn-outline-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card related-product-card">
+                            <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?ixlib=rb-4.0.3&w=500" class="card-img-top" alt="OnePlus 12">
+                            <div class="card-body">
+                                <h6 class="card-title">OnePlus 12</h6>
+                                <p class="card-text text-primary">$699.99</p>
+                                <a href="product-detail.html?id=4" class="btn btn-outline-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                console.log('Related products loaded');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

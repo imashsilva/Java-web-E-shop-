@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - E-Store</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/logincss.css">
+</head>
+<body>
+
+    <!-- Main Auth Container -->
+    <div class="auth-container">
+        <div class="row g-0">
+            <!-- Left Side - Welcome Content -->
+            <div class="col-lg-6">
+                <div class="auth-left">
+                    <div class="text-center text-lg-start">
+                        <h1 class="display-5 fw-bold mb-4">Welcome to E-Store</h1>
+                        <p class="lead mb-5">Your one-stop destination for amazing products and great deals. Join thousands of satisfied customers today!</p>
+
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Secure shopping experience</li>
+                            <li><i class="fas fa-check"></i> Fast and free delivery</li>
+                            <li><i class="fas fa-check"></i> 24/7 Customer support</li>
+                            <li><i class="fas fa-check"></i> Easy returns within 30 days</li>
+                            <li><i class="fas fa-check"></i> Best price guarantee</li>
+                        </ul>
+
+                        <div class="mt-5">
+                            <div class="d-flex align-items-center justify-content-center justify-content-lg-start">
+                                <div class="avatar-group">
+                                    <img src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=John+Doe" class="rounded-circle border border-3 border-white" width="40" alt="User">
+                                    <img src="https://ui-avatars.com/api/?background=8B5CF6&color=fff&name=Jane+Smith" class="rounded-circle border border-3 border-white" width="40" style="margin-left: -10px;" alt="User">
+                                    <img src="https://ui-avatars.com/api/?background=10B981&color=fff&name=Mike+Johnson" class="rounded-circle border border-3 border-white" width="40" style="margin-left: -10px;" alt="User">
+                                    <span class="ms-3 text-white-50">Join 10,000+ happy customers</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Forms -->
+            <div class="col-lg-6">
+                <div class="auth-right">
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs auth-tabs" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button">Login</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button">Register</button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="authTabsContent">
+
+                        <!-- Login Form -->
+                        <div class="tab-pane fade show active" id="login" role="tabpanel">
+                            <h3 class="mb-4">Welcome Back!</h3>
+
+                            <!-- Error/Success Messages -->
+                            <div id="loginMessage"></div>
+
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="loginUsername" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="loginUsername" name="username" placeholder="Enter your username" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Password</label>
+                                    <div class="password-input">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                            <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter your password" required>
+                                        </div>
+                                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="rememberMe">
+                                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                                    </div>
+                                    <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 mb-3">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                                </button>
+
+                                <div class="divider">
+                                    <span>Or continue with</span>
+                                </div>
+
+                                <div class="social-login">
+                                    <button type="button" class="social-btn">
+                                        <i class="fab fa-google text-danger"></i> Google
+                                    </button>
+                                    <button type="button" class="social-btn">
+                                        <i class="fab fa-facebook text-primary"></i> Facebook
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Register Form -->
+                        <div class="tab-pane fade" id="register" role="tabpanel">
+                            <h3 class="mb-4">Create Account</h3>
+
+                            <!-- Error/Success Messages -->
+                            <div id="registerMessage"></div>
+
+                            <form id="registerForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="regUsername" class="form-label">Username *</label>
+                                        <input type="text" class="form-control" id="regUsername" name="username" placeholder="Choose username" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="regEmail" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="regEmail" name="email" placeholder="your@email.com" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="regPassword" class="form-label">Password *</label>
+                                        <div class="password-input">
+                                            <input type="password" class="form-control" id="regPassword" name="password" placeholder="Create password" required>
+                                            <button type="button" class="password-toggle" onclick="togglePassword('regPassword')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="regConfirmPassword" class="form-label">Confirm Password *</label>
+                                        <div class="password-input">
+                                            <input type="password" class="form-control" id="regConfirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+                                            <button type="button" class="password-toggle" onclick="togglePassword('regConfirmPassword')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="regFullName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="regFullName" name="fullName" placeholder="Enter your full name">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="regPhone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="regPhone" name="phone" placeholder="Enter your phone number">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="regAddress" class="form-label">Address</label>
+                                    <textarea class="form-control" id="regAddress" name="address" rows="2" placeholder="Enter your address"></textarea>
+                                </div>
+
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                    <label class="form-check-label" for="agreeTerms">
+                                        I agree to the <a href="#" class="forgot-password">Terms & Conditions</a> and <a href="rest-password.html" class="forgot-password">Privacy Policy</a>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Your Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="forgotPasswordMessage"></div>
+
+                    <!-- Step 1: Enter Email -->
+                    <div id="forgotPasswordStep1">
+                        <p class="text-muted mb-4">Enter your email address and we'll help you reset your password.</p>
+                        <form id="forgotPasswordForm">
+                            <div class="mb-3">
+                                <label for="forgotEmail" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="forgotEmail" name="email" placeholder="your@email.com" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Continue</button>
+                        </form>
+                    </div>
+
+                    <!-- Step 2: Reset Password -->
+                    <div id="forgotPasswordStep2" style="display: none;">
+                        <p class="text-muted mb-4">Enter your new password below.</p>
+                        <form id="resetPasswordForm">
+                            <input type="hidden" id="resetEmail" name="email">
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">New Password</label>
+                                <div class="password-input">
+                                    <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="Enter new password" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                                <div class="password-input">
+                                    <input type="password" class="form-control" id="confirmNewPassword" name="confirmPassword" placeholder="Confirm new password" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword('confirmNewPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Reset Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="JS/session.js"></script>
+    
+<script>
+    // Quick login for testing (local storage only)
+    function quickLogin(username) {
+        const userData = {
+            id: username === 'john_doe' ? 1 : 2,
+            username: username,
+            name: username === 'john_doe' ? 'John Doe' : 'Jane Smith',
+            email: username === 'john_doe' ? 'john@example.com' : 'jane@example.com',
+            loginTime: new Date().toISOString()
+        };
+        
+        sessionManager.saveUserToStorage(userData);
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-1"></i> Logged In!';
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+        
+        $('#loginMessage').html(`
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle me-2"></i>Login successful! Redirecting...
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+        
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
+    }
+
+    // Toggle password visibility
+    function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = input.parentNode.querySelector('.password-toggle i') || 
+                    input.parentNode.parentNode.querySelector('.password-toggle i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Show forgot password modal
+    function showForgotPassword() {
+        const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+        document.getElementById('forgotPasswordStep1').style.display = 'block';
+        document.getElementById('forgotPasswordStep2').style.display = 'none';
+        document.getElementById('forgotPasswordMessage').innerHTML = '';
+        $('#forgotEmail').val('');
+        modal.show();
+    }
+
+    // REAL LOGIN FORM SUBMISSION - CONNECTS TO SERVLET
+    $('#loginForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const username = $('#loginUsername').val();
+        const password = $('#loginPassword').val();
+        
+        if (!username || !password) {
+            $('#loginMessage').html(`
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>Please enter both username and password
+                </div>
+            `);
+            return;
+        }
+
+        // Show loading
+        const submitBtn = $(this).find('button[type="submit"]');
+        const originalText = submitBtn.html();
+        submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Logging in...');
+        submitBtn.prop('disabled', true);
+
+        const loginData = {
+            username: username,
+            password: password
+        };
+
+        // Add this to your login.html or login.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there's a redirect parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect');
+    
+    if (redirectUrl) {
+        console.log('🔀 Login will redirect to:', redirectUrl);
+        // Store the redirect URL for after login
+        localStorage.setItem('loginRedirect', redirectUrl);
+    }
+    
+    // After successful login, redirect back
+    if (window.sessionManager) {
+        // Override the login success behavior
+        const originalLogin = window.sessionManager.login;
+        window.sessionManager.login = function(loginData) {
+            return originalLogin.call(this, loginData).then(user => {
+                // Check for redirect URL
+                const redirectUrl = localStorage.getItem('loginRedirect');
+                if (redirectUrl) {
+                    console.log('✅ Login successful, redirecting to:', redirectUrl);
+                    localStorage.removeItem('loginRedirect');
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = 'index.html';
+                }
+                return user;
+            });
+        };
+    }
+});
+        
+        // Use REAL login method that connects to servlet
+        sessionManager.login(loginData)
+            .then(user => {
+                $('#loginMessage').html(`
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Login successful! Redirecting...
+                    </div>
+                `);
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            })
+            .catch(error => {
+                $('#loginMessage').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>${error.message}
+                    </div>
+                `);
+                
+                // Reset button
+                submitBtn.html(originalText);
+                submitBtn.prop('disabled', false);
+            });
+    });
+
+    // REAL REGISTRATION FORM SUBMISSION - CONNECTS TO SERVLET
+    $('#registerForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const formData = {
+            username: $('#regUsername').val(),
+            email: $('#regEmail').val(),
+            password: $('#regPassword').val(),
+            confirmPassword: $('#regConfirmPassword').val(),
+            fullName: $('#regFullName').val(),
+            phone: $('#regPhone').val(),
+            address: $('#regAddress').val()
+        };
+
+        // Basic validation
+        if (formData.password !== formData.confirmPassword) {
+            $('#registerMessage').html(`
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>Passwords do not match!
+                </div>
+            `);
+            return;
+        }
+
+        // Show loading
+        const submitBtn = $(this).find('button[type="submit"]');
+        const originalText = submitBtn.html();
+        submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...');
+        submitBtn.prop('disabled', true);
+
+        // Use REAL registration method that connects to servlet
+        sessionManager.registerUser(formData)
+            .then(response => {
+                $('#registerMessage').html(`
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Registration successful! Please login.
+                    </div>
+                `);
+
+                // Switch to login tab after successful registration
+                setTimeout(() => {
+                    $('#register-tab').removeClass('active');
+                    $('#login-tab').addClass('active');
+                    $('#register').removeClass('show active');
+                    $('#login').addClass('show active');
+                    $('#registerForm')[0].reset();
+                    
+                    // Reset button
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                }, 2000);
+            })
+            .catch(error => {
+                $('#registerMessage').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>${error.message}
+                    </div>
+                `);
+                
+                // Reset button
+                submitBtn.html(originalText);
+                submitBtn.prop('disabled', false);
+            });
+    });
+
+    // REAL FORGOT PASSWORD - CONNECTS TO SERVLET
+    $('#forgotPasswordForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const email = $('#forgotEmail').val();
+
+        if (!email) {
+            $('#forgotPasswordMessage').html(`
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>Please enter your email address
+                </div>
+            `);
+            return;
+        }
+
+        // Show loading
+        const submitBtn = $(this).find('button[type="submit"]');
+        const originalText = submitBtn.html();
+        submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Sending...');
+        submitBtn.prop('disabled', true);
+
+        // Use REAL forgot password method that connects to servlet
+        sessionManager.initiatePasswordReset(email)
+            .then(result => {
+                $('#forgotPasswordMessage').html(`
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>${result.message}
+                    </div>
+                `);
+
+                // Redirect to reset password page
+                setTimeout(() => {
+                    $('#forgotPasswordModal').modal('hide');
+                    window.location.href = `reset-password.html?email=${encodeURIComponent(email)}`;
+                }, 2000);
+            })
+            .catch(error => {
+                $('#forgotPasswordMessage').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>${error.message}
+                    </div>
+                `);
+                
+                // Reset button
+                submitBtn.html(originalText);
+                submitBtn.prop('disabled', false);
+            });
+    });
+
+    // Clear messages when switching tabs
+    $('.nav-tabs button').on('click', function() {
+        $('#loginMessage').html('');
+        $('#registerMessage').html('');
+    });
+</script>    
+    
+</body>
+</html>

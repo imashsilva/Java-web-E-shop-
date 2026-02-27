@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Shopping Cart - E-Store</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="CSS/Cartcss.css">
+
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="index.html">
+                    <i class="fas fa-shopping-bag me-2"></i>E-Store
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="products.html">Products</a>
+                        </li>
+                    </ul>
+
+                    <div class="navbar-nav ms-auto">
+                        <a class="nav-link position-relative me-3" href="cart.html">
+                            <i class="fas fa-shopping-cart fa-lg"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">0</span>
+                        </a>
+
+                        <div class="nav-item dropdown" id="userMenu">
+                            <!-- Dynamic user menu -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+        <!-- Cart Section -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="fw-bold">Shopping Cart</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                <li class="breadcrumb-item active">Cart</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Cart Items -->
+                    <div class="col-lg-8">
+                        <div id="cartItemsContainer">
+                            <!-- Cart items will be loaded here -->
+                            <div class="empty-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <h3>Your cart is empty</h3>
+                                <p class="text-muted">Add some products to get started!</p>
+                                <a href="products.html" class="btn btn-primary mt-3">
+                                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Summary -->
+                    <div class="col-lg-4">
+                        <div class="cart-summary">
+                            <h4 class="mb-4">Order Summary</h4>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Items:</span>
+                                <span id="totalItems">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping:</span>
+                                <span id="shipping">$5.99</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tax:</span>
+                                <span id="tax">$0.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-4 fw-bold fs-5">
+                                <span>Total:</span>
+                                <span id="total">$0.00</span>
+                            </div>
+
+                            <button class="btn btn-primary w-100 mb-3" id="checkoutBtn" onclick="window.location.href = 'checkout.html'">
+                                <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                            </button>
+
+                            <button class="btn btn-outline-danger w-100 mb-2" id="clearCartBtn" disabled>
+                                <i class="fas fa-trash me-2"></i>Clear Cart
+                            </button>
+                            <button class="btn btn-outline-secondary w-100" id="continueShoppingBtn">
+                                <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <<script src="JS/session.js"></script>
+
+        <script>
+    // Use managers from session.js - NO DUPLICATE DECLARATIONS
+    const cartManager = window.sessionManager ? window.sessionManager.cartManager : new CartManager();
+
+    // Update cart count in navigation
+    async function updateCartCount() {
+        try {
+            const count = await cartManager.getCartCount();
+            const cartCountElements = document.querySelectorAll('#cartCount');
+            cartCountElements.forEach(element => {
+                element.textContent = count;
+                element.style.display = count > 0 ? 'inline' : 'none';
+            });
+            console.log('✅ Cart count updated:', count);
+        } catch (error) {
+            console.error('❌ Error updating cart count:', error);
+        }
+    }
+
+    // Load cart items - IMPROVED VERSION
+    async function loadCartItems() {
+        console.log('🔄 Loading cart items...');
+
+        if (!window.sessionManager || !window.sessionManager.isLoggedIn()) {
+            console.log('❌ User not logged in, redirecting to login');
+            window.location.href = 'login.html?redirect=cart.html';
+            return;
+        }
+
+        try {
+            console.log('✅ User is logged in, fetching cart items...');
+            const data = await cartManager.getCartItems();
+            console.log('📦 Cart data received for display:', data);
+            displayCartItems(data);
+            await updateCartCount();
+        } catch (error) {
+            console.error('❌ Failed to load cart:', error);
+            if (window.ToastManager) {
+                window.ToastManager.show('Failed to load cart items: ' + error.message, 'error');
+            }
+            showErrorState();
+        }
+    }
+
+    // Display cart items - IMPROVED VERSION
+    function displayCartItems(data) {
+        const container = document.getElementById('cartItemsContainer');
+        const clearCartBtn = document.getElementById('clearCartBtn');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+
+        console.log('🎨 Displaying cart items:', data);
+
+        // Check if we have valid cart data
+        if (!data || typeof data !== 'object') {
+            console.error('❌ Invalid cart data structure');
+            showEmptyCart();
+            disableCartButtons();
+            return;
+        }
+
+        // Extract items array from response
+        const items = data.items || [];
+        console.log(`📦 Processing ${items.length} cart items`);
+
+        if (items.length === 0) {
+            showEmptyCart();
+            disableCartButtons();
+            return;
+        }
+
+        let html = '';
+        let subtotal = 0;
+        let totalItems = 0;
+
+        items.forEach((item, index) => {
+            console.log(`🛍️ Item ${index + 1}:`, item);
+
+            // Extract item data with fallbacks
+            const itemId = item.id || item.cartItemId || index;
+            const productName = item.productName || 'Unnamed Product';
+
+            // Handle price conversion (BigDecimal or number)
+            let price = 0;
+            if (typeof item.price === 'object') {
+                price = parseFloat(item.price) || 0;
+            } else {
+                price = parseFloat(item.price) || 0;
+            }
+
+            const quantity = parseInt(item.quantity) || 1;
+            const itemSubtotal = price * quantity;
+            subtotal += itemSubtotal;
+            totalItems += quantity;
+
+            // Use product image or placeholder
+            const productImage = item.productImage || item.imageUrl ||
+                    'https://via.placeholder.com/100?text=No+Image';
+
+            html += `
+                <div class="cart-item mb-4 p-3 border rounded" data-cart-item-id="${itemId}">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <img src="${productImage}" 
+                                 class="img-fluid rounded" alt="${productName}" 
+                                 style="width: 80px; height: 80px; object-fit: cover;">
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="mb-1">${productName}</h5>
+                            <p class="text-muted mb-0 small">$${price.toFixed(2)} each</p>
+                            ${quantity > 1 ? `<p class="text-success mb-0 small">$${itemSubtotal.toFixed(2)} total</p>` : ''}
+                        </div>
+                        <div class="col-md-2">
+                            <span class="h5 text-primary">$${price.toFixed(2)}</span>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="quantity-controls d-flex align-items-center">
+                                <button class="btn btn-outline-secondary btn-sm" 
+                                        onclick="updateQuantity(${itemId}, ${quantity - 1})" 
+                                        ${quantity <= 1 ? 'disabled' : ''}>
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" class="form-control mx-2 text-center quantity-input" 
+                                       value="${quantity}" min="1" max="99" 
+                                       onchange="updateQuantity(${itemId}, parseInt(this.value))"
+                                       style="width: 60px;">
+                                <button class="btn btn-outline-secondary btn-sm" 
+                                        onclick="updateQuantity(${itemId}, ${quantity + 1})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <div class="h5 mb-2 text-success">$${itemSubtotal.toFixed(2)}</div>
+                            <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart(${itemId})">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Calculate totals
+        const tax = subtotal * 0.1; // 10% tax
+        const shipping = subtotal > 0 ? 5.99 : 0;
+        const total = subtotal + shipping + tax;
+
+        updateSummary(totalItems, subtotal, shipping, tax, total);
+        clearCartBtn.disabled = false;
+        checkoutBtn.disabled = false;
+
+        console.log('✅ Cart display updated successfully');
+    }
+
+    function showEmptyCart() {
+        const container = document.getElementById('cartItemsContainer');
+        container.innerHTML = `
+            <div class="empty-cart text-center py-5">
+                <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                <h3 class="text-muted">Your cart is empty</h3>
+                <p class="text-muted mb-4">Add some products to get started!</p>
+                <a href="products.html" class="btn btn-primary btn-lg">
+                    <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                </a>
+            </div>
+        `;
+    }
+
+    function showErrorState() {
+        const container = document.getElementById('cartItemsContainer');
+        container.innerHTML = `
+            <div class="empty-cart text-center py-5">
+                <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                <h3>Unable to Load Cart</h3>
+                <p class="text-muted">There was an error loading your cart items.</p>
+                <button class="btn btn-primary mt-3" onclick="loadCartItems()">
+                    <i class="fas fa-redo me-2"></i>Try Again
+                </button>
+            </div>
+        `;
+    }
+
+    function disableCartButtons() {
+        document.getElementById('clearCartBtn').disabled = true;
+        document.getElementById('checkoutBtn').disabled = true;
+        updateSummary(0, 0, 0, 0, 0);
+    }
+
+    // Update quantity
+    async function updateQuantity(cartItemId, newQuantity) {
+        if (newQuantity < 1) {
+            removeFromCart(cartItemId);
+            return;
+        }
+
+        try {
+            await cartManager.updateCartItem(cartItemId, newQuantity);
+            await loadCartItems();
+            if (window.ToastManager) {
+                window.ToastManager.show('Cart updated successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Failed to update quantity:', error);
+            if (window.ToastManager) {
+                window.ToastManager.show(error.message || 'Failed to update quantity', 'error');
+            }
+            await loadCartItems();
+        }
+    }
+
+    // Remove from cart
+    async function removeFromCart(cartItemId) {
+        if (!confirm('Are you sure you want to remove this item from your cart?')) {
+            return;
+        }
+
+        try {
+            await cartManager.removeFromCart(cartItemId);
+            await loadCartItems();
+            if (window.ToastManager) {
+                window.ToastManager.show('Item removed from cart', 'success');
+            }
+        } catch (error) {
+            console.error('Failed to remove item:', error);
+            if (window.ToastManager) {
+                window.ToastManager.show(error.message || 'Failed to remove item', 'error');
+            }
+        }
+    }
+
+    // Clear cart
+    async function clearCart() {
+        if (!confirm('Are you sure you want to clear your entire cart?')) {
+            return;
+        }
+
+        try {
+            await cartManager.clearCart();
+            await loadCartItems();
+            if (window.ToastManager) {
+                window.ToastManager.show('Cart cleared successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Failed to clear cart:', error);
+            if (window.ToastManager) {
+                window.ToastManager.show(error.message || 'Failed to clear cart', 'error');
+            }
+        }
+    }
+
+    // Add this function to your cart.html
+    function proceedToCheckout() {
+        console.log('🛒 Proceeding to checkout from cart...');
+
+        // Check if user is logged in
+        if (!window.sessionManager || !window.sessionManager.isLoggedIn()) {
+            console.log('❌ User not logged in, redirecting to login');
+            // Redirect to login with return URL to checkout
+            window.location.href = 'login.html?redirect=checkout.html';
+            return;
+        }
+
+        // Check if cart has items
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn.disabled) {
+            window.ToastManager.show('Your cart is empty', 'warning');
+            return;
+        }
+
+        console.log('✅ User is logged in, redirecting to checkout');
+        window.location.href = 'checkout.html';
+    }
+
+// Make sure the checkout button uses this function
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', proceedToCheckout);
+        }
+    });
+
+    // Update summary
+    function updateSummary(totalItems, subtotal, shipping, tax, total) {
+        document.getElementById('totalItems').textContent = totalItems;
+        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('shipping').textContent = `$${shipping.toFixed(2)}`;
+        document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+        document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+
+        document.getElementById('checkoutBtn').disabled = subtotal === 0;
+    }
+
+    // Event listeners
+    document.getElementById('continueShoppingBtn').addEventListener('click', function () {
+        window.location.href = 'products.html';
+    });
+
+    document.getElementById('checkoutBtn').addEventListener('click', function () {
+        window.location.href = 'checkout.html';
+    });
+
+    document.getElementById('clearCartBtn').addEventListener('click', clearCart);
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('🚀 Cart page loaded, initializing...');
+
+        // Add debug info
+        console.log('🔧 Debug Info:');
+        console.log('  - sessionManager available:', !!window.sessionManager);
+        console.log('  - cartManager available:', !!cartManager);
+        console.log('  - ToastManager available:', !!window.ToastManager);
+        console.log('  - User logged in:', window.sessionManager ? window.sessionManager.isLoggedIn() : false);
+
+        setTimeout(() => {
+            loadCartItems();
+        }, 500);
+    });
+
+    // Global functions
+    window.updateQuantity = updateQuantity;
+    window.removeFromCart = removeFromCart;
+    window.loadCartItems = loadCartItems;
+
+    // Debug function to check cart data
+    async function debugCartData() {
+        console.log('🐛 DEBUG: Checking cart data...');
+        try {
+            const data = await cartManager.getCartItems();
+            console.log('🐛 DEBUG - Cart data structure:', data);
+            console.log('🐛 DEBUG - Items array:', data.items);
+            console.log('🐛 DEBUG - Items length:', data.items ? data.items.length : 0);
+
+            if (data.items && data.items.length > 0) {
+                console.log('🐛 DEBUG - First item full details:', JSON.stringify(data.items[0], null, 2));
+            }
+        } catch (error) {
+            console.error('🐛 DEBUG - Error:', error);
+        }
+    }
+
+    // Run debug after page loads
+    setTimeout(debugCartData, 1000);
+        </script>
+
+    </body>
+</html>

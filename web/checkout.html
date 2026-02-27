@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Checkout - Smart Tech</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="CSS/checkout.css">
+    </head>
+    <body>
+        <!-- Navigation
+        <div id="navbar-container"></div>
+        -->
+        
+        <!-- Checkout Header -->
+        <div class="bg-dark text-white py-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="h2 mb-0">Checkout</h1>
+                        <p class="mb-0 text-light">Complete your purchase</p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-md-end mb-0">
+                                <li class="breadcrumb-item"><a href="index.html" class="text-light">Home</a></li>
+                                <li class="breadcrumb-item"><a href="cart.html" class="text-light">Cart</a></li>
+                                <li class="breadcrumb-item active text-light">Checkout</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container for Notifications -->
+        <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+        <!-- Checkout Content -->
+        <div class="container py-5">
+            <div class="row">
+                <!-- Checkout Steps -->
+                <div class="col-12 mb-4">
+                    <div class="checkout-steps">
+                        <div class="step active">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Shipping</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Payment</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Confirmation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkout Form -->
+                <div class="col-lg-8">
+                    <!-- Shipping Information -->
+                    <div class="checkout-section" id="shippingSection">
+                        <h4 class="mb-4"><i class="fas fa-shipping-fast me-2"></i>Shipping Information</h4>
+
+                        <form id="shippingForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                    <div class="invalid-feedback">Please provide your first name.</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                    <div class="invalid-feedback">Please provide your last name.</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">Please provide a valid email address.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                                <div class="invalid-feedback">Please provide your phone number.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Shipping Address *</label>
+                                <textarea class="form-control" id="address" name="address" rows="3" required placeholder="Enter your complete shipping address"></textarea>
+                                <div class="invalid-feedback">Please provide your shipping address.</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label">City *</label>
+                                    <input type="text" class="form-control" id="city" name="city" required>
+                                    <div class="invalid-feedback">Please provide your city.</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="postalCode" class="form-label">Postal Code *</label>
+                                    <input type="text" class="form-control" id="postalCode" name="postalCode" required>
+                                    <div class="invalid-feedback">Please provide your postal code.</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country *</label>
+                                <select class="form-select" id="country" name="country" required>
+                                    <option value="">Select Country</option>
+                                    <option value="LK" selected>Sri Lanka</option>
+                                    <option value="US">United States</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="AU">Australia</option>
+                                </select>
+                                <div class="invalid-feedback">Please select your country.</div>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="saveAddress">
+                                <label class="form-check-label" for="saveAddress">
+                                    Save this address for future orders
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="cart.html" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Cart
+                                </a>
+                                <button type="button" class="btn btn-primary" id="checkoutBtn" onclick="proceedToPayment()">
+                                    Continue to Payment <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Payment Information -->
+                    <div class="checkout-section" id="paymentSection" style="display: none;">
+                        <h4 class="mb-4"><i class="fas fa-credit-card me-2"></i>Payment Information</h4>
+
+                        <form id="paymentForm">
+                            <div class="mb-4">
+                                <label class="form-label">Payment Method *</label>
+                                <div class="payment-methods">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="payhere" value="payhere" checked>
+                                        <label class="form-check-label" for="payhere">
+                                            <i class="fas fa-mobile-alt me-2"></i>PayHere (Credit/Debit Card)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod">
+                                        <label class="form-check-label" for="cod">
+                                            <i class="fas fa-money-bill-wave me-2"></i>Cash on Delivery
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PayHere Payment Details -->
+                            <div id="payhereDetails" class="payment-gateway-details">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    You will be redirected to PayHere secure payment page to complete your payment.
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="payherePhone" class="form-label">Mobile Number for Payment Alerts</label>
+                                        <input type="tel" class="form-control" id="payherePhone" placeholder="94771234567" value="94771234567">
+                                        <div class="form-text">We'll send payment confirmation to this number</div>
+                                    </div>
+                                </div>
+
+                                <!-- Security Badges -->
+                                <div class="security-badges">
+                                    <div class="security-badge">
+                                        <i class="fas fa-lock me-1"></i>SSL Secure
+                                    </div>
+                                    <div class="security-badge">
+                                        <i class="fas fa-shield-alt me-1"></i>PCI DSS
+                                    </div>
+                                    <div class="security-badge">
+                                        <i class="fas fa-mobile-alt me-1"></i>Mobile Friendly
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cash on Delivery Details -->
+                            <div id="codDetails" class="payment-gateway-details" style="display: none;">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Payment will be collected when your order is delivered. Additional verification may be required.
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="codAgreement">
+                                    <label class="form-check-label" for="codAgreement">
+                                        I agree to pay the full amount upon delivery
+                                    </label>
+                                </div>
+                                
+                                <!-- COD Instructions -->
+                                <div class="alert alert-light border">
+                                    <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Cash on Delivery Instructions</h6>
+                                    <ul class="mb-0 small">
+                                        <li>Please have exact change ready</li>
+                                        <li>Delivery personnel will provide a receipt</li>
+                                        <li>Orders are processed within 24 hours</li>
+                                        <li>Free delivery for orders over $50</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-outline-secondary" onclick="backToShipping()">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Shipping
+                                </button>
+                                <button type="button" class="btn btn-success btn-lg" id="placeOrderBtn" onclick="processPayment()">
+                                    <i class="fas fa-lock me-2"></i>Complete Order
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="order-summary">
+                        <h5 class="mb-4"><i class="fas fa-receipt me-2"></i>Order Summary</h5>
+
+                        <!-- Order Items Container -->
+                        <div id="orderItems" class="mb-4">
+                            <div class="text-center text-muted py-4">
+                                <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                Loading order items...
+                            </div>
+                        </div>
+
+                        <!-- Order Totals -->
+                        <div class="order-totals">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Shipping:</span>
+                                <span id="shipping">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Tax:</span>
+                                <span id="tax">$0.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3 fw-bold fs-5 text-primary">
+                                <span>Total:</span>
+                                <span id="total">$0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Order Notes -->
+                        <div class="order-notes mt-4">
+                            <label for="orderNotes" class="form-label">
+                                <i class="fas fa-sticky-note me-1"></i>Order Notes (Optional)
+                            </label>
+                            <textarea class="form-control" id="orderNotes" rows="2" placeholder="Add any special instructions for delivery..."></textarea>
+                            <div class="form-text">e.g., delivery time preferences, gate codes, etc.</div>
+                        </div>
+
+                        <!-- Trust Badges -->
+                        <div class="trust-badges mt-4 p-3 bg-light rounded">
+                            <h6 class="text-center mb-3"><i class="fas fa-shield-alt me-2 text-success"></i>Secure Checkout</h6>
+                            <div class="row g-2 text-center">
+                                <div class="col-4">
+                                    <div class="trust-badge">
+                                        <i class="fas fa-lock text-success mb-1"></i>
+                                        <div><small>SSL Secure</small></div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="trust-badge">
+                                        <i class="fas fa-truck text-primary mb-1"></i>
+                                        <div><small>Fast Delivery</small></div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="trust-badge">
+                                        <i class="fas fa-undo text-info mb-1"></i>
+                                        <div><small>Easy Returns</small></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Support Info -->
+                        <div class="support-info mt-3 text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-headset me-1"></i>
+                                Need help? <a href="contact.html" class="text-decoration-none">Contact Support</a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div id="footer-container"></div>
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        
+        <!-- Load session.js first, then checkout.js -->
+        <script src="JS/session.js"></script>
+        <script src="JS/checkout.js"></script>
+
+        <script>
+            // Load footer and navigation
+            document.addEventListener('DOMContentLoaded', function() {
+                // Load footer if container exists
+                const footerContainer = document.getElementById('footer-container');
+                if (footerContainer) {
+                    fetch('footer.html')
+                        .then(response => response.text())
+                        .then(html => {
+                            footerContainer.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error loading footer:', error);
+                        });
+                }
+
+                // Load navigation if container exists
+                const navContainer = document.getElementById('navbar-container');
+                if (navContainer) {
+                    // Load navigation if you have a separate file
+                    fetch('nav.html')
+                        .then(response => response.text())
+                        .then(html => {
+                            navContainer.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error loading navigation:', error);
+                        });
+                }
+
+                // Initialize tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            });
+
+            // Payment method change handler
+            function setupPaymentMethodHandlers() {
+                const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+                const payhereDetails = document.getElementById('payhereDetails');
+                const codDetails = document.getElementById('codDetails');
+
+                paymentMethods.forEach(method => {
+                    method.addEventListener('change', function() {
+                        if (this.value === 'payhere') {
+                            payhereDetails.style.display = 'block';
+                            codDetails.style.display = 'none';
+                        } else if (this.value === 'cod') {
+                            payhereDetails.style.display = 'none';
+                            codDetails.style.display = 'block';
+                        }
+                    });
+                });
+            }
+
+            // Initialize payment method handlers
+            document.addEventListener('DOMContentLoaded', function() {
+                setupPaymentMethodHandlers();
+                
+                // Pre-fill PayHere phone with main phone number if available
+                const mainPhone = document.getElementById('phone');
+                const payherePhone = document.getElementById('payherePhone');
+                
+                if (mainPhone && payherePhone) {
+                    mainPhone.addEventListener('blur', function() {
+                        if (mainPhone.value && !payherePhone.value) {
+                            payherePhone.value = mainPhone.value;
+                        }
+                    });
+                }
+            });
+
+            // Global error handler for better user experience
+            window.addEventListener('error', function(e) {
+                console.error('Global error:', e.error);
+                if (window.ToastManager) {
+                    window.ToastManager.show('Something went wrong. Please refresh the page.', 'error');
+                }
+            });
+
+            // Handle page visibility changes (useful for payment redirects)
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    // Page became visible again (user returned from payment gateway)
+                    console.log('Page visible - user may have returned from payment');
+                }
+            });
+        </script>
+
+    </body>
+</html>
